@@ -48,3 +48,24 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Get Cluster Credentials
+        run: |
+          gcloud container clusters get-credentials vibs-gke-cluster \
+          --region us-east4 \
+          --project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Verify Cluster
+        run: kubectl get nodes
+
+      - name: Deploy Kubernetes Resources
+        run: kubectl apply -f yaml_files/
+
+      - name: Verify Pods
+        run: kubectl get pods
+
+      - name: Verify Services
+        run: kubectl get svc
